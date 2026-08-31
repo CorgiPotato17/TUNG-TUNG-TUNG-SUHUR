@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="night">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Service &mdash; Restaurant Management</title>
+<meta name="description" content="Service: a restaurant management dashboard with Orion, an on-shift AI assistant.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🕯️</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="frame">
+
+  <!-- Sidebar -->
+  <aside class="rail">
+    <div class="rail-top">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">🕯</span>
+        <span class="brand-word">Service</span>
+      </div>
+    </div>
+
+    <nav class="rail-nav" aria-label="Main">
+      <button class="rail-link is-active" data-view="dashboard">
+        <span class="ic" aria-hidden="true">◇</span><span>The Pass</span>
+      </button>
+      <button class="rail-link" data-view="orders">
+        <span class="ic" aria-hidden="true">▤</span><span>Tickets</span>
+      </button>
+      <button class="rail-link" data-view="tables">
+        <span class="ic" aria-hidden="true">▦</span><span>Floor</span>
+      </button>
+      <button class="rail-link" data-view="menu">
+        <span class="ic" aria-hidden="true">☰</span><span>Menu &amp; Stock</span>
+      </button>
+      <button class="rail-link" data-view="staff">
+        <span class="ic" aria-hidden="true">◍</span><span>Crew</span>
+      </button>
+    </nav>
+
+    <div class="rail-bottom">
+      <button class="orion-launch" id="orionLaunch">
+        <span class="orion-dot" aria-hidden="true"></span>
+        <span>Ask Orion</span>
+      </button>
+      <button class="theme-switch" id="themeSwitch" aria-label="Toggle night mode" title="Toggle service hours">
+        <span class="theme-track">
+          <span class="theme-thumb"></span>
+        </span>
+        <span class="theme-label" id="themeLabel">Night service</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="stage">
+
+    <header class="topbar">
+      <div class="topbar-title">
+        <h1 id="viewTitle">The Pass</h1>
+        <p id="viewSub">Sunday, Aug 30 &mdash; dinner service</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-ghost" id="printDay">Print prep sheet</button>
+        <button class="btn btn-primary" id="newOrderBtn">+ New ticket</button>
+      </div>
+    </header>
+
+    <div class="views">
+
+      <!-- DASHBOARD -->
+      <section class="view is-active" id="view-dashboard">
+        <div class="stat-row" id="statRow"></div>
+
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Covers by hour</h2>
+              <span class="panel-note">Today vs last Sunday</span>
+            </div>
+            <div class="chart" id="coversChart"></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h2>From Orion</h2>
+              <span class="panel-note">Auto-refreshed each ticket</span>
+            </div>
+            <div class="insight-list" id="dashInsights"></div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Best sellers today</h2>
+            </div>
+            <ol class="rank-list" id="bestSellers"></ol>
+          </div>
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Floor at a glance</h2>
+              <span class="panel-note" id="floorNote"></span>
+            </div>
+            <div class="mini-floor" id="miniFloor"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ORDERS -->
+      <section class="view" id="view-orders">
+        <div class="filter-row" id="orderFilters"></div>
+        <div class="ticket-board" id="ticketBoard"></div>
+      </section>
+
+      <!-- TABLES -->
+      <section class="view" id="view-tables">
+        <div class="floor-legend">
+          <span><i class="dot dot-open"></i>Open</span>
+          <span><i class="dot dot-seated"></i>Seated</span>
+          <span><i class="dot dot-fired"></i>Fired</span>
+          <span><i class="dot dot-check"></i>Check dropped</span>
+        </div>
+        <div class="floor-plan" id="floorPlan"></div>
+      </section>
+
+      <!-- MENU -->
+      <section class="view" id="view-menu">
+        <div class="filter-row" id="menuFilters"></div>
+        <div class="stock-table-wrap">
+          <table class="stock-table" id="stockTable">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Station</th>
+                <th>On hand</th>
+                <th>Par level</th>
+                <th>Status</th>
+                <th>Price</th>
+              </tr>
+            </thead>
+            <tbody id="stockBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- STAFF -->
+      <section class="view" id="view-staff">
+        <div class="crew-grid" id="crewGrid"></div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- Orion Drawer -->
+<div class="orion-scrim" id="orionScrim"></div>
+<aside class="orion-drawer" id="orionDrawer" aria-label="Orion assistant">
+  <div class="orion-head">
+    <div class="orion-id">
+      <span class="orion-dot lg" aria-hidden="true"></span>
+      <div>
+        <h2>Orion</h2>
+        <p>On the pass with you tonight</p>
+      </div>
+    </div>
+    <button class="orion-close" id="orionClose" aria-label="Close Orion">&times;</button>
+  </div>
+
+  <div class="orion-chips" id="orionChips"></div>
+
+  <div class="orion-thread" id="orionThread"></div>
+
+  <form class="orion-input-row" id="orionForm">
+    <input type="text" id="orionInput" placeholder="Ask about stock, sales, the floor, staffing&hellip;" autocomplete="off">
+    <button type="submit" aria-label="Send">&#8594;</button>
+  </form>
+</aside>
+
+<!-- New order modal -->
+<div class="modal-scrim" id="modalScrim"></div>
+<div class="modal" id="newOrderModal" role="dialog" aria-modal="true" aria-label="New ticket">
+  <h2>Fire a new ticket</h2>
+  <form id="newOrderForm">
+    <label>Table
+      <select id="ordTable"></select>
+    </label>
+    <label>Items <span class="hint">comma-separated</span>
+      <input type="text" id="ordItems" placeholder="Duck confit, Burrata, House sourdough">
+    </label>
+    <label>Server
+      <select id="ordServer"></select>
+    </label>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-ghost" id="cancelOrder">Cancel</button>
+      <button type="submit" class="btn btn-primary">Send to kitchen</button>
+    </div>
+  </form>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/orion.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
